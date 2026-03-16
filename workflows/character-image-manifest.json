@@ -1,0 +1,22 @@
+{
+  "name": "character-image",
+  "description": "Generates consistent Walter Whiskers character images using Flux Kontext Pro. Supports optional input_image for character reference consistency across scenes.",
+  "class_type_primary": "FluxKontextProImageNode",
+  "dynamic_params": {
+    "1.prompt": "Scene-specific prompt describing Walter's pose, expression, and background for each scene",
+    "1.aspect_ratio": "Switch between 16:9 and 9:16 depending on output format",
+    "1.seed": "Change per scene or keep fixed for consistency",
+    "1.input_image": "(optional) Reference image of Walter from a previous generation to maintain character consistency"
+  },
+  "expected_inputs": {
+    "input_image": "Optional — previously generated Walter image for character reference locking"
+  },
+  "expected_outputs": {
+    "images": "PNG image of Walter Whiskers in the specified scene"
+  },
+  "notes": {
+    "partner_api": "Requires extra_data.api_key_comfy_org in workflow submission to ComfyUI Cloud",
+    "character_consistency": "For multi-scene consistency, generate scene 1 first, then pass that output as input_image to subsequent scenes",
+    "alternative_node": "FluxKontextMaxImageNode available as higher-quality alternative with same interface"
+  }
+}

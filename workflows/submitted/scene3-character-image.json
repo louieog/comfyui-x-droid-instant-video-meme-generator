@@ -1,0 +1,20 @@
+{
+  "1": {
+    "class_type": "FluxKontextProImageNode",
+    "inputs": {
+      "prompt": "Medium shot of an orange tabby cat wearing a tailored navy blue business suit with red tie, behind a professional news anchor desk. The cat is straightening his tie with one paw, staring straight through the camera with devastating calm. Behind him a large screen shows simple white text on black background reading 1300+ CIVILIANS. No graphics, no memes, just the number. Lower-third chyron banner reads: THAT NUMBER IS NOT CONTENT. Studio lighting is professional broadcast blue and warm key light. The mood is somber and heavy. Photorealistic, cinematic, 4K.",
+      "aspect_ratio": "16:9",
+      "guidance": 3.5,
+      "steps": 28,
+      "seed": 42,
+      "prompt_upsampling": false
+    }
+  },
+  "2": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": ["1", 0],
+      "filename_prefix": "walter-scene3"
+    }
+  }
+}

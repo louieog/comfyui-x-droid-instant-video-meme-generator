@@ -1,0 +1,20 @@
+{
+  "1": {
+    "class_type": "FluxKontextProImageNode",
+    "inputs": {
+      "prompt": "Professional news broadcast studio. An orange tabby cat wearing a tailored navy blue business suit with a red tie, sitting upright behind a news anchor desk, dead-eyed stare into camera, visibly unsettled. Behind him a large screen shows a split image: on the left a SpongeBob meme captioned FREEDOM INCOMING, on the right satellite imagery of smoke plumes. Lower-third chyron banner reads: GOVERNMENT POSTS SPONGEBOB WHILE GAS HITS $6. The cats ears are flat back, genuinely disturbed. Desk has papers, coffee mug, glass of water. Studio lighting is professional broadcast blue and warm key light. Photorealistic, cinematic, 4K.",
+      "aspect_ratio": "16:9",
+      "guidance": 3.5,
+      "steps": 28,
+      "seed": 42,
+      "prompt_upsampling": false
+    }
+  },
+  "2": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": ["1", 0],
+      "filename_prefix": "walter-scene1"
+    }
+  }
+}

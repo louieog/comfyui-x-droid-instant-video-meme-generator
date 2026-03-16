@@ -1,0 +1,14 @@
+{
+    "1":{"class_type":"LoadImage","inputs":{"image":"eb426371ba47f04de76d75c49a41ab2f67db6a01508ed3e212e615e7077a1078.png"}},
+    "2":{"class_type":"KlingImage2VideoNode","inputs":{
+      "start_frame":["1",0],
+      "prompt":"Orange tabby cat news anchor close-up, leaning forward conspiratorially, eyes suddenly dilate wide tracking something off-screen then snaps back to camera, paw knocks pen off desk, professional studio, cinematic 4K",
+      "negative_prompt":"blurry, distorted, low quality, cartoon, anime, morphing face",
+      "model_name":"kling-v2-master",
+      "cfg_scale":0.5,
+      "mode":"pro",
+      "aspect_ratio":"16:9",
+      "duration":"5"
+    }},
+    "3":{"class_type":"SaveVideo","inputs":{"video":["2",0],"filename_prefix":"i2v-scene2","format":"video/h264-mp4","codec":"h264"}}
+  }

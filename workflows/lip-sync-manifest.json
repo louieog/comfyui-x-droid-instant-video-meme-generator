@@ -1,0 +1,24 @@
+{
+  "name": "lip-sync",
+  "description": "Syncs video with audio using Kling Lip Sync via ComfyUI Cloud. Takes a video of a character and audio dialogue, outputs video with lip-synced mouth movements.",
+  "class_type_primary": "KlingLipSyncAudioToVideoNode",
+  "dynamic_params": {
+    "1.file": "Filename of uploaded video (via POST /api/upload/image with video file)",
+    "2.audio": "Filename of uploaded audio (via POST /api/upload/image with audio file)",
+    "3.voice_language": "zh | en"
+  },
+  "expected_inputs": {
+    "video": "Upload video via POST /api/upload/image (accepts video files despite endpoint name). Reference by returned filename.",
+    "audio": "Upload audio via POST /api/upload/image (accepts audio files). Reference by returned filename."
+  },
+  "expected_outputs": {
+    "video": "MP4 video with lip-synced mouth movements matching the audio"
+  },
+  "notes": {
+    "partner_api": "Requires extra_data.api_key_comfy_org in workflow submission",
+    "save_video_format": "Must be 'mp4' not 'video/h264-mp4'",
+    "limitations": "Designed for human faces. Cat/animal face geometry may cause failures. Have fallback plan: overlay audio via ffmpeg if lip sync fails.",
+    "upload_note": "Both video and audio files are uploaded via the /api/upload/image endpoint despite the name. Use -F 'image=@file.mp4' format.",
+    "reliability": "Approximately 66% success rate on non-human subjects. Always implement retry + fallback logic."
+  }
+}

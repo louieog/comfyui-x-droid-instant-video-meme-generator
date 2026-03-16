@@ -1,0 +1,20 @@
+{
+  "1": {
+    "class_type": "FluxKontextProImageNode",
+    "inputs": {
+      "prompt": "Close-up of an orange tabby cat wearing a tailored navy blue business suit with red tie, behind a professional news anchor desk. The cat is leaning in conspiratorially toward camera, eyes intense. Behind him a large screen cycles showing: a Call of Duty gameplay screenshot with MISSION ACCOMPLISHED text overlay, a gas station price sign reading $6.49, a congressional vote tally graphic. Lower-third chyron banner reads: WAR REBRANDED AS CONTENT. A pen sits at the edge of the desk near the cats paw. Studio lighting is professional broadcast blue and warm key light. Photorealistic, cinematic, 4K.",
+      "aspect_ratio": "16:9",
+      "guidance": 3.5,
+      "steps": 28,
+      "seed": 42,
+      "prompt_upsampling": false
+    }
+  },
+  "2": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": ["1", 0],
+      "filename_prefix": "walter-scene2"
+    }
+  }
+}

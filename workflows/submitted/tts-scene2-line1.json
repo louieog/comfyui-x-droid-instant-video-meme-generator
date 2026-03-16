@@ -1,0 +1,28 @@
+{
+  "1": {
+    "class_type": "ElevenLabsVoiceSelector",
+    "inputs": {
+      "voice": "Chris"
+    }
+  },
+  "2": {
+    "class_type": "ElevenLabsTextToSpeech",
+    "inputs": {
+      "voice": ["1", 0],
+      "text": "I knock things off tables and even I think that's unhinged.",
+      "stability": 0.5,
+      "apply_text_normalization": "auto",
+      "model": "eleven_multilingual_v2",
+      "language_code": "en",
+      "seed": 42,
+      "output_format": "mp3_44100_128"
+    }
+  },
+  "3": {
+    "class_type": "SaveAudio",
+    "inputs": {
+      "audio": ["2", 0],
+      "filename_prefix": "tts-scene2-line1"
+    }
+  }
+}

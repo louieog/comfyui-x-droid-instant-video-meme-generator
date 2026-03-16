@@ -1,0 +1,20 @@
+{
+  "1": {
+    "class_type": "FluxKontextProImageNode",
+    "inputs": {
+      "prompt": "An orange tabby cat wearing a tailored navy blue business suit with a red tie, sitting upright behind a professional news anchor desk. The cat has slightly narrowed, world-weary green eyes and a perpetual expression of mild disdain. Gray whiskers suggesting age and experience. A small earpiece visible in one ear. The desk has papers, a coffee mug that says 'World's Okayest Anchor', and a glass of water. Behind the desk is a large screen showing 'THE FELINE REPORT' logo with a paw print replacing the O in REPORT. Studio lighting is professional broadcast blue and warm key light.",
+      "aspect_ratio": "16:9",
+      "guidance": 3.5,
+      "steps": 28,
+      "seed": 42,
+      "prompt_upsampling": false
+    }
+  },
+  "2": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": ["1", 0],
+      "filename_prefix": "walter-whiskers"
+    }
+  }
+}

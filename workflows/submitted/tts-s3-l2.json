@@ -1,0 +1,30 @@
+{
+    "1": {
+      "class_type": "ElevenLabsVoiceSelector",
+      "inputs": {
+        "voice": "George (male, british)"
+      }
+    },
+    "2": {
+      "class_type": "ElevenLabsTextToSpeech",
+      "inputs": {
+        "voice": ["1", 0],
+        "text": "Stay curious. Stay suspicious.",
+        "stability": 0.4,
+        "apply_text_normalization": "auto",
+        "model": "eleven_v3",
+        "speed": 0.9,
+        "similarity_boost": 0.8,
+        "language_code": "en",
+        "seed": 42,
+        "output_format": "mp3_44100_192"
+      }
+    },
+    "3": {
+      "class_type": "SaveAudio",
+      "inputs": {
+        "audio": ["2", 0],
+        "filename_prefix": "tts-s3-l2"
+      }
+    }
+  }

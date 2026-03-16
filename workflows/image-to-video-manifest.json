@@ -1,0 +1,27 @@
+{
+  "name": "image-to-video",
+  "description": "Animates a still image into a 5 or 10 second video clip using Kling v2 via ComfyUI Cloud partner nodes.",
+  "class_type_primary": "KlingImage2VideoNode",
+  "dynamic_params": {
+    "1.image": "Filename of previously uploaded image (via POST /api/upload/image). Use the 'name' field from upload response.",
+    "2.prompt": "Motion description for the scene",
+    "2.negative_prompt": "What to avoid in generation",
+    "2.model_name": "kling-v1 | kling-v1-5 | kling-v1-6 | kling-v2-master | kling-v2-1 | kling-v2-1-master | kling-v2-5-turbo",
+    "2.cfg_scale": "0.0-1.0 — guidance scale, default 0.8",
+    "2.mode": "std (faster/cheaper) | pro (higher quality)",
+    "2.aspect_ratio": "16:9 | 9:16 | 1:1",
+    "2.duration": "5 | 10 (seconds)"
+  },
+  "expected_inputs": {
+    "image": "Must upload image first via POST /api/upload/image, then reference by returned filename"
+  },
+  "expected_outputs": {
+    "video": "MP4 video clip"
+  },
+  "notes": {
+    "partner_api": "Requires extra_data.api_key_comfy_org in workflow submission",
+    "save_video_format": "Must be 'mp4' not 'video/h264-mp4'. Codec options: 'auto' or 'h264'.",
+    "generation_time": "Typically 2-4 minutes per clip",
+    "job_status": "ComfyUI Cloud uses 'success' not 'completed' as the done status"
+  }
+}
