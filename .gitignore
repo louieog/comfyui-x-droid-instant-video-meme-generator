@@ -1,0 +1,21 @@
+# Environment
+.env
+*.env.local
+
+# Output assets (large files)
+output/
+characters/*.png
+characters/*.jpg
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Temp
+*.tmp
+*.log
