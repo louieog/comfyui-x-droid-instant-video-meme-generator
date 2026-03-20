@@ -19,3 +19,5 @@ __pycache__/
 # Temp
 *.tmp
 *.log
+web/.next/
+web/node_modules/
