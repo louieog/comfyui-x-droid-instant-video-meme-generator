@@ -4,34 +4,43 @@
     {
       "theme": "AI replacing jobs",
       "notes": "evergreen topic, high engagement",
-      "styles": ["absurdist", "relatable"]
+      "styles": [
+        "absurdist",
+        "relatable"
+      ]
     },
     {
       "theme": "animals in human situations",
       "notes": "universal appeal, safe for all platforms",
-      "styles": ["wholesome", "absurdist"]
+      "styles": [
+        "wholesome",
+        "absurdist"
+      ]
     },
     {
       "theme": "programmer humor",
       "notes": "strong niche audience, high share rate",
-      "styles": ["relatable", "dark-humor"]
+      "styles": [
+        "relatable",
+        "dark-humor"
+      ]
     },
     {
       "theme": "gen-z vs millennials vs boomers",
       "notes": "generational humor, comment bait",
-      "styles": ["relatable", "absurdist"]
+      "styles": [
+        "relatable",
+        "absurdist"
+      ]
     },
     {
       "theme": "dating app experiences",
       "notes": "massive reach, relatable",
-      "styles": ["relatable", "cinematic"]
+      "styles": [
+        "relatable",
+        "cinematic"
+      ]
     }
   ],
-  "avoid": [
-    "politics",
-    "religion",
-    "specific real people without permission",
-    "copyrighted characters",
-    "violence or gore"
-  ]
+  "avoid": []
 }

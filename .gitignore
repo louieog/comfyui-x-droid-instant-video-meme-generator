@@ -16,6 +16,10 @@ __pycache__/
 *.pyc
 .venv/
 
+# Requests (runtime data)
+requests/*.json
+requests/*.log
+
 # Temp
 *.tmp
 *.log

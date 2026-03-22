@@ -39,9 +39,29 @@ export async function GET(
       // Brief may not exist
     }
 
-    // Also check for briefs with different naming (e.g. slug-based)
-    if (!briefData && requestData) {
-      // Try matching by concept slug
+    // Try to read pipeline status
+    let statusData = null;
+    try {
+      const raw = await readFile(
+        path.join(PATHS.requests, `${id}.status.json`),
+        "utf-8"
+      );
+      statusData = JSON.parse(raw);
+    } catch {
+      // Status file may not exist
+    }
+
+    // Try to read brief written by pipeline (keyed by request ID)
+    if (!briefData) {
+      try {
+        const raw = await readFile(
+          path.join(PATHS.requests, `${id}.brief.json`),
+          "utf-8"
+        );
+        briefData = JSON.parse(raw);
+      } catch {
+        // Not yet generated
+      }
     }
 
     if (!requestData && !briefData) {
@@ -52,6 +72,7 @@ export async function GET(
       id,
       request: requestData,
       brief: briefData,
+      pipeline: statusData,
     });
   } catch (error) {
     return NextResponse.json(

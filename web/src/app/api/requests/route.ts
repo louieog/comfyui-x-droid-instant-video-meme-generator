@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readdir, readFile, writeFile, mkdir } from "fs/promises";
+import { spawn } from "child_process";
 import path from "path";
 import { randomUUID } from "crypto";
 import { PATHS } from "@/lib/paths";
@@ -61,7 +62,9 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const { concept, format, style, duration, modelOverrides, referenceImage } = body;
+    const { concept, format, style, duration_target, duration, model_overrides, modelOverrides, referenceImage } = body;
+    const dur = duration_target || duration;
+    const models = model_overrides || modelOverrides;
 
     if (!concept) {
       return NextResponse.json(
@@ -76,8 +79,8 @@ export async function POST(request: NextRequest) {
       concept,
       format: format || "skit",
       style: style || "absurdist",
-      duration_target_seconds: duration || 30,
-      model_overrides: modelOverrides || {},
+      duration_target_seconds: dur || 30,
+      model_overrides: models || {},
       reference_image: referenceImage || null,
       priority: "normal",
       created_at: new Date().toISOString(),
@@ -90,7 +93,24 @@ export async function POST(request: NextRequest) {
       "utf-8"
     );
 
-    return NextResponse.json(requestData, { status: 201 });
+    // Trigger pipeline in background
+    const script = path.join(PATHS.root, "scripts", "run-pipeline.sh");
+    const child = spawn("bash", [script, id], {
+      cwd: PATHS.root,
+      detached: true,
+      stdio: ["ignore", "pipe", "pipe"],
+      env: { ...process.env, PATH: `/Users/orlando/.local/bin:${process.env.PATH}` },
+    });
+    child.unref();
+
+    // Write initial status
+    await writeFile(
+      path.join(PATHS.requests, `${id}.status.json`),
+      JSON.stringify({ request_id: id, status: "generating", stage: "meme-scout", detail: "Pipeline started..." }, null, 2),
+      "utf-8"
+    );
+
+    return NextResponse.json({ ...requestData, pipeline: "started" }, { status: 201 });
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to create request", detail: String(error) },
