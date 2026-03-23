@@ -122,7 +122,16 @@ IMPORTANT schema notes (from previous successful runs):
 - If a model name doesn't exist on ComfyUI Cloud (e.g. kling-v3), query /api/object_info to find the closest available model and use that instead. Log the fallback.
 
 Save all assets to ./output/scenes/${SLUG}/
-Write a generation-log.json summarizing results." 2>&1 | tee "./requests/${REQUEST_ID}.comfy-dispatcher.log"
+
+CRITICAL: Write a DETAILED generation-log.json to ./output/scenes/${SLUG}/generation-log.json with this structure:
+{
+  \"images\": [{\"scene_id\": N, \"model\": \"actual model\", \"prompt\": \"exact prompt sent\", \"negative_prompt\": \"...\", \"parameters\": {...}, \"comfy_prompt_id\": \"uuid\", \"output_file\": \"filename\", \"status\": \"success/failed\", \"error\": \"if any\"}],
+  \"tts\": [{\"scene_id\": N, \"line_index\": 0, \"character\": \"name\", \"text\": \"exact dialogue\", \"voice\": \"voice label\", \"parameters\": {\"speed\": ..., \"stability\": ..., \"similarity_boost\": ...}, \"comfy_prompt_id\": \"uuid\", \"output_file\": \"filename\", \"status\": \"success/failed/skipped\"}],
+  \"video\": [{\"scene_id\": N, \"model\": \"actual model\", \"model_requested\": \"original\", \"prompt\": \"exact prompt\", \"negative_prompt\": \"...\", \"parameters\": {...}, \"input_image\": \"filename\", \"comfy_prompt_id\": \"uuid\", \"output_file\": \"filename\", \"status\": \"success/failed\", \"fallback_reason\": \"if model changed\"}],
+  \"lip_sync\": [{\"scene_id\": N, \"model\": \"...\", \"input_video\": \"...\", \"input_audio\": \"...\", \"comfy_prompt_id\": \"uuid\", \"output_file\": \"filename\", \"status\": \"success/failed/skipped\", \"fallback\": \"description if fallback used\"}],
+  \"errors\": [{\"stage\": \"...\", \"error\": \"...\", \"resolution\": \"...\"}]
+}
+Every prompt_id, every prompt string, every parameter must be logged. This is essential for manual re-runs." 2>&1 | tee "./requests/${REQUEST_ID}.comfy-dispatcher.log"
 
 update_status "generating" "assembler" "Assembling final video..."
 echo "[2/4] Assets generated."
@@ -148,6 +157,113 @@ Follow the assembly pipeline:
 6. Export 16:9 and 9:16 versions
 7. Generate thumbnail from punchline scene
 8. Write metadata.json with suggested caption and hashtags
+9. IMPORTANT: The metadata.json MUST include a 'pipeline_log' object with the following structure:
+
+{
+  ...existing metadata fields...,
+  \"pipeline_log\": {
+    \"request_id\": \"${REQUEST_ID}\",
+    \"generated_at\": \"ISO timestamp\",
+    \"errors\": [
+      {\"stage\": \"stage_name\", \"error\": \"description\", \"resolution\": \"what happened\"}
+    ],
+    \"stages\": {
+      \"images\": {
+        \"model_used\": \"actual model name used\",
+        \"model_requested\": \"what was requested\",
+        \"per_scene\": [
+          {
+            \"scene_id\": 1,
+            \"prompt_input\": \"the exact prompt text sent to the image model\",
+            \"negative_prompt\": \"if any\",
+            \"parameters\": {\"aspect_ratio\": \"...\", \"seed\": ..., \"other_params\": \"...\"},
+            \"output_file\": \"filename.png\",
+            \"comfy_prompt_id\": \"the prompt_id returned by ComfyUI\",
+            \"status\": \"success or failed\",
+            \"error\": \"if failed\"
+          }
+        ]
+      },
+      \"tts\": {
+        \"model_used\": \"ElevenLabs eleven_v3 or none\",
+        \"voice\": \"voice name used\",
+        \"skipped\": true/false,
+        \"per_line\": [
+          {
+            \"scene_id\": 1,
+            \"character\": \"char name\",
+            \"text_input\": \"the exact dialogue text\",
+            \"voice_style\": \"description from brief\",
+            \"emotion\": \"emotion tag\",
+            \"parameters\": {\"speed\": ..., \"stability\": ..., \"similarity_boost\": ...},
+            \"output_file\": \"filename.mp3\",
+            \"comfy_prompt_id\": \"...\",
+            \"status\": \"success or failed or skipped\"
+          }
+        ]
+      },
+      \"video\": {
+        \"model_used\": \"actual model name\",
+        \"model_requested\": \"what was requested\",
+        \"fallback_reason\": \"why a different model was used, if applicable\",
+        \"per_scene\": [
+          {
+            \"scene_id\": 1,
+            \"prompt_input\": \"exact prompt sent to video model\",
+            \"negative_prompt\": \"if any\",
+            \"parameters\": {\"duration\": \"...\", \"mode\": \"...\", \"aspect_ratio\": \"...\", \"cfg_scale\": ...},
+            \"input_image\": \"source image filename\",
+            \"output_file\": \"filename.mp4\",
+            \"comfy_prompt_id\": \"...\",
+            \"status\": \"success or failed\"
+          }
+        ]
+      },
+      \"lip_sync\": {
+        \"model_used\": \"model name or none\",
+        \"skipped\": true/false,
+        \"per_scene\": [
+          {
+            \"scene_id\": 1,
+            \"input_video\": \"source video filename\",
+            \"input_audio\": \"source audio filename\",
+            \"output_file\": \"filename.mp4\",
+            \"comfy_prompt_id\": \"...\",
+            \"status\": \"success or failed or skipped\",
+            \"fallback\": \"ffmpeg audio overlay if lip sync failed\"
+          }
+        ]
+      },
+      \"assembly\": {
+        \"ffmpeg_commands\": [\"the actual ffmpeg commands run\"],
+        \"output_files\": {\"16x9\": \"filename\", \"9x16\": \"filename\", \"thumbnail\": \"filename\"}
+      }
+    },
+    \"characters\": [
+      {
+        \"id\": \"character id from brief\",
+        \"description\": \"full character description from brief\",
+        \"reference_image\": \"filename if generated\"
+      }
+    ],
+    \"scene_briefs\": [
+      {
+        \"scene_id\": 1,
+        \"beat\": \"HOOK\",
+        \"visual_description\": \"full visual description from brief\",
+        \"dialogue\": [{\"character\": \"...\", \"line\": \"...\", \"emotion\": \"...\"}],
+        \"text_overlay\": \"...\",
+        \"camera\": \"...\",
+        \"duration_target\": 5,
+        \"duration_actual\": 4.8
+      }
+    ]
+  }
+}
+
+Read the comfy-dispatcher generation-log.json from ./output/scenes/${SLUG}/ for the prompt_ids and per-asset details.
+Also read the brief at ./output/briefs/${SLUG}-brief.json for the scene descriptions and character info.
+Include ALL errors encountered during generation and how they were resolved.
 
 Output to ./output/$(date +%Y-%m-%d)/${SLUG}-16x9.mp4 and 9x16.
 Create the thumbnails/ subdirectory too." 2>&1 | tee "./requests/${REQUEST_ID}.assembler.log"
