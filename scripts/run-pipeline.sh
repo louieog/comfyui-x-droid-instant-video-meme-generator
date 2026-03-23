@@ -276,4 +276,14 @@ Create the thumbnails/ subdirectory too." 2>&1 | tee "./requests/${REQUEST_ID}.a
 update_status "complete" "done" "Video assembled"
 echo ""
 echo "[4/4] Pipeline complete!"
-echo "Output: ./output/$(date +%Y-%m-%d)/"
+
+# Auto-copy to Desktop
+DESKTOP_DIR="$HOME/Desktop/Meme Engine Outputs/$(date +%Y-%m-%d) - ${SLUG}"
+OUTPUT_DIR="./output/$(date +%Y-%m-%d)"
+if [ -d "$OUTPUT_DIR" ]; then
+  mkdir -p "$DESKTOP_DIR"
+  cp -R "$OUTPUT_DIR"/* "$DESKTOP_DIR"/ 2>/dev/null
+  echo "Copied to: $DESKTOP_DIR"
+fi
+
+echo "Output: $OUTPUT_DIR"
