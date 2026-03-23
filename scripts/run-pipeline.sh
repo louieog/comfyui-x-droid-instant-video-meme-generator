@@ -134,8 +134,21 @@ CRITICAL: Write a DETAILED generation-log.json to ./output/scenes/${SLUG}/genera
   \"tts\": [{\"scene_id\": N, \"line_index\": 0, \"character\": \"name\", \"text\": \"exact dialogue\", \"voice\": \"voice label\", \"parameters\": {\"speed\": ..., \"stability\": ..., \"similarity_boost\": ...}, \"comfy_prompt_id\": \"uuid\", \"output_file\": \"filename\", \"status\": \"success/failed/skipped\"}],
   \"video\": [{\"scene_id\": N, \"model\": \"actual model\", \"model_requested\": \"original\", \"prompt\": \"exact prompt\", \"negative_prompt\": \"...\", \"parameters\": {...}, \"input_image\": \"filename\", \"comfy_prompt_id\": \"uuid\", \"output_file\": \"filename\", \"status\": \"success/failed\", \"fallback_reason\": \"if model changed\"}],
   \"lip_sync\": [{\"scene_id\": N, \"model\": \"...\", \"input_video\": \"...\", \"input_audio\": \"...\", \"comfy_prompt_id\": \"uuid\", \"output_file\": \"filename\", \"status\": \"success/failed/skipped\", \"fallback\": \"description if fallback used\"}],
-  \"errors\": [{\"stage\": \"...\", \"error\": \"...\", \"resolution\": \"...\"}]
+  \"errors\": [{\"stage\": \"...\", \"error\": \"...\", \"resolution\": \"...\"}],
+  \"submitted_workflows\": {
+    \"image_scene_1\": { ...the exact JSON object you sent to POST /api/prompt for scene 1 image... },
+    \"tts_scene_1_line_0\": { ...exact JSON for TTS... },
+    \"video_scene_1\": { ...exact JSON for video... },
+    \"lipsync_scene_1\": { ...exact JSON for lip sync... }
+  }
 }
+
+CRITICAL REQUIREMENT - submitted_workflows:
+For EVERY API call to POST /api/prompt, save the EXACT JSON payload (the full 'prompt' object with all node definitions and connections) in the submitted_workflows dict. Key format: '{stage}_scene_{N}' or '{stage}_scene_{N}_line_{M}' for TTS.
+These must be importable directly into ComfyUI web app. The format is API format (node IDs as keys, class_type + inputs per node).
+Also save each workflow as a separate file: ./output/scenes/${SLUG}/workflows/{stage}-scene{N}.json
+This allows the user to import any individual workflow into ComfyUI Cloud web editor and manually tweak nodes.
+
 Every prompt_id, every prompt string, every parameter must be logged. This is essential for manual re-runs." 2>&1 | tee "./requests/${REQUEST_ID}.comfy-dispatcher.log"
 
 update_status "generating" "assembler" "Assembling final video..."
@@ -271,7 +284,8 @@ Also read the brief at ./output/briefs/${SLUG}-brief.json for the scene descript
 Include ALL errors encountered during generation and how they were resolved.
 
 Output to ./output/$(date +%Y-%m-%d)/${SLUG}-16x9.mp4 and 9x16.
-Create the thumbnails/ subdirectory too." 2>&1 | tee "./requests/${REQUEST_ID}.assembler.log"
+Create the thumbnails/ subdirectory too.
+Also copy ./output/scenes/${SLUG}/workflows/ directory into the final output directory as 'workflows/' so the ComfyUI workflow JSONs ship alongside the videos." 2>&1 | tee "./requests/${REQUEST_ID}.assembler.log"
 
 update_status "complete" "done" "Video assembled"
 echo ""
