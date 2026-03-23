@@ -98,11 +98,18 @@ Read the brief at ./output/briefs/${SLUG}-brief.json (or ./requests/${REQUEST_ID
 Read the workflow templates in ./workflows/ for the correct API schemas.
 Source .env for the API key.
 
-For each scene:
+For each scene, execute these stages in order:
 1. Generate character images using the character-image workflow template
-2. Generate TTS dialogue using the tts-dialogue workflow template  
+2. Generate TTS dialogue using the tts-dialogue workflow template (SKIP if model_overrides.tts is 'none')
 3. Generate video clips using the image-to-video workflow template
-4. Generate lip-sync using the lip-sync workflow template (with fallback to raw video + audio overlay via ffmpeg)
+4. Generate lip-sync using the lip-sync workflow template (SKIP if model_overrides.lip_sync is 'none', fallback to raw video + audio overlay via ffmpeg if lip sync fails)
+
+CRITICAL - AUDIO HANDLING:
+- Check model_overrides in the request JSON for tts and lip_sync settings
+- If tts is 'none' AND the video model supports native audio (like Veo3, KlingTextToVideoWithAudio, WanSoundImageToVideo), include the dialogue text directly in the video generation prompt so the model generates audio
+- If tts is 'none' BUT the video model does NOT support native audio (like kling-v2-master, kling-v2-1-master, kling-v2-5-turbo, RunwayGen4, Luma, Vidu, etc.), OVERRIDE the tts setting and generate TTS audio anyway using ElevenLabs with voice 'George (male, british)'. Log a warning that native audio was requested but the video model doesn't support it.
+- Native audio video models: Veo3VideoGenerationNode, KlingTextToVideoWithAudio, KlingImageToVideoWithAudio, WanSoundImageToVideo
+- All other video models are SILENT and need separate TTS
 
 IMPORTANT schema notes (from previous successful runs):
 - ElevenLabs voice needs full label format: 'George (male, british)' not just 'George'
@@ -112,6 +119,7 @@ IMPORTANT schema notes (from previous successful runs):
 - ComfyUI Cloud job status is 'success' not 'completed'
 - Always include extra_data.api_key_comfy_org in prompt submissions
 - Upload files via POST /api/upload/image (works for images, video, and audio despite the name)
+- If a model name doesn't exist on ComfyUI Cloud (e.g. kling-v3), query /api/object_info to find the closest available model and use that instead. Log the fallback.
 
 Save all assets to ./output/scenes/${SLUG}/
 Write a generation-log.json summarizing results." 2>&1 | tee "./requests/${REQUEST_ID}.comfy-dispatcher.log"

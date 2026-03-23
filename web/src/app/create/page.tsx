@@ -39,26 +39,33 @@ const IMAGE_MODELS = [
   { value: "OpenAIGPTImage1", label: "GPT Image 1" },
   { value: "StabilityStableImageUltraNode", label: "Stability Ultra" },
   { value: "KlingImageGenerationNode", label: "Kling Image" },
+  { value: "NanoBananaProImageNode", label: "Nano Banana Pro" },
+  { value: "GeminiFlash25ImageNode", label: "Gemini Flash 2.5" },
   { value: "LumaImageNode", label: "Luma Image" },
   { value: "RunwayTextToImageNode", label: "Runway" },
 ];
 
 const VIDEO_MODELS = [
-  { value: "kling-v2-master", label: "Kling v2 Master" },
-  { value: "kling-v2-1-master", label: "Kling v2.1 Master" },
-  { value: "kling-v2-5-turbo", label: "Kling v2.5 Turbo" },
-  { value: "RunwayImageToVideoNodeGen4", label: "Runway Gen4" },
-  { value: "LumaImageToVideoNode", label: "Luma" },
-  { value: "Veo3VideoGenerationNode", label: "Veo 3" },
-  { value: "VeoVideoGenerationNode", label: "Veo 2" },
-  { value: "MinimaxHailuoVideoNode", label: "Minimax / Hailuo" },
-  { value: "Vidu3ImageToVideoNode", label: "Vidu 3" },
-  { value: "WanImageToVideoApi", label: "Wan" },
-  { value: "HunyuanImageToVideo", label: "Hunyuan" },
-  { value: "OpenAIVideoSora2", label: "Sora 2" },
+  { value: "kling-v2-master", label: "Kling v2 Master", hasAudio: false },
+  { value: "kling-v2-1-master", label: "Kling v2.1 Master", hasAudio: false },
+  { value: "kling-v2-5-turbo", label: "Kling v2.5 Turbo", hasAudio: false },
+  { value: "kling-v3", label: "Kling 3", hasAudio: false },
+  { value: "KlingTextToVideoWithAudio", label: "Kling v2 + Audio", hasAudio: true },
+  { value: "KlingImageToVideoWithAudio", label: "Kling I2V + Audio", hasAudio: true },
+  { value: "RunwayImageToVideoNodeGen4", label: "Runway Gen4", hasAudio: false },
+  { value: "LumaImageToVideoNode", label: "Luma", hasAudio: false },
+  { value: "Veo3VideoGenerationNode", label: "Veo 3 (native audio)", hasAudio: true },
+  { value: "VeoVideoGenerationNode", label: "Veo 2", hasAudio: false },
+  { value: "MinimaxHailuoVideoNode", label: "Minimax / Hailuo", hasAudio: false },
+  { value: "Vidu3ImageToVideoNode", label: "Vidu 3", hasAudio: false },
+  { value: "WanImageToVideoApi", label: "Wan", hasAudio: false },
+  { value: "WanSoundImageToVideo", label: "Wan + Sound", hasAudio: true },
+  { value: "HunyuanImageToVideo", label: "Hunyuan", hasAudio: false },
+  { value: "OpenAIVideoSora2", label: "Sora 2", hasAudio: false },
 ];
 
 const VOICE_OPTIONS = [
+  { value: "none", label: "None (video model handles audio)" },
   { value: "George (male, british)", label: "George (male, british)" },
   { value: "Roger (male, american)", label: "Roger (male, american)" },
   { value: "Sarah (female, american)", label: "Sarah (female, american)" },
@@ -103,6 +110,18 @@ export default function CreatePage() {
   const [voice, setVoice] = useState("George (male, british)");
   const [lipSync, setLipSync] = useState("KlingLipSyncAudioToVideoNode");
   const [refImage, setRefImage] = useState<File | null>(null);
+
+  const selectedVideoModel = VIDEO_MODELS.find((m) => m.value === videoModel);
+  const videoHasAudio = selectedVideoModel?.hasAudio ?? false;
+
+  function handleVideoModelChange(val: string) {
+    setVideoModel(val);
+    const model = VIDEO_MODELS.find((m) => m.value === val);
+    if (model?.hasAudio) {
+      setVoice("none");
+      setLipSync("none");
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -213,16 +232,32 @@ export default function CreatePage() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium mb-2">Video Model</label>
-                      <Select options={VIDEO_MODELS} value={videoModel} onChange={setVideoModel} />
+                      <Select options={VIDEO_MODELS} value={videoModel} onChange={handleVideoModelChange} />
                     </div>
                   </div>
+
+                  {videoHasAudio && (
+                    <div className="bg-primary/10 border border-primary/20 rounded-lg px-3 py-2">
+                      <p className="text-xs text-primary">
+                        {selectedVideoModel?.label} generates audio natively -- TTS and lip sync stages will be skipped.
+                        You can still override below if you want separate audio generation.
+                      </p>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Voice</label>
+                    <div className={videoHasAudio ? "opacity-50" : ""}>
+                      <label className="block text-sm font-medium mb-2">
+                        Voice (TTS)
+                        {videoHasAudio && <span className="text-xs text-muted-foreground ml-2">-- skipped</span>}
+                      </label>
                       <Select options={VOICE_OPTIONS} value={voice} onChange={setVoice} />
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Lip Sync</label>
+                    <div className={videoHasAudio ? "opacity-50" : ""}>
+                      <label className="block text-sm font-medium mb-2">
+                        Lip Sync
+                        {videoHasAudio && <span className="text-xs text-muted-foreground ml-2">-- skipped</span>}
+                      </label>
                       <Select options={LIPSYNC_OPTIONS} value={lipSync} onChange={setLipSync} />
                     </div>
                   </div>
