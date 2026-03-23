@@ -1,0 +1,29 @@
+{
+  "name": "kling-v3-omni-i2v",
+  "description": "Kling v3 OmniPro image-to-video with native audio generation. Generates video with speech/sound from a reference image and text prompt.",
+  "class_type_primary": "KlingOmniProImageToVideoNode",
+  "dynamic_params": {
+    "1.image": "Filename of uploaded reference image (via POST /api/upload/image)",
+    "2.prompt": "Scene description including dialogue. For audio: describe what characters say and sound effects. E.g. 'Cat sits at desk and says: Stay curious. Stay suspicious. News jingle plays.'",
+    "2.model_name": "kling-v3-omni | kling-video-o1 (o1 does NOT support audio or storyboards)",
+    "2.aspect_ratio": "16:9 | 9:16 | 1:1",
+    "2.duration": "3-15 seconds (integer)",
+    "2.resolution": "1080p | 720p",
+    "2.generate_audio": "true for native audio generation, false for silent video",
+    "2.seed": "Change for variation"
+  },
+  "expected_inputs": {
+    "image": "Upload image via POST /api/upload/image, reference by returned filename"
+  },
+  "expected_outputs": {
+    "video": "MP4 video with native audio (if generate_audio=true)"
+  },
+  "notes": {
+    "partner_api": "Requires extra_data.api_key_comfy_org in workflow submission",
+    "audio": "When generate_audio=true, include dialogue and sound descriptions directly in the prompt. The model will generate matching speech and sound effects.",
+    "storyboards": "Supports optional storyboards for multi-segment generation (kling-v3-omni only). Use COMFY_DYNAMICCOMBO_V3 format.",
+    "save_video_format": "Must be 'mp4' not 'video/h264-mp4'",
+    "duration": "Supports 3-15 seconds (more flexible than v2's 5/10 only)",
+    "o1_model": "kling-video-o1 does NOT support generate_audio or storyboards"
+  }
+}

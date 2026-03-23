@@ -1,0 +1,30 @@
+{
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "uploaded-image-filename.png"
+    }
+  },
+  "2": {
+    "class_type": "KlingOmniProImageToVideoNode",
+    "inputs": {
+      "model_name": "kling-v3-omni",
+      "prompt": "Description of scene with dialogue: character says 'line here'. Include motion, emotion, and audio cues in the prompt.",
+      "aspect_ratio": "16:9",
+      "duration": 5,
+      "reference_images": ["1", 0],
+      "resolution": "1080p",
+      "generate_audio": true,
+      "seed": 0
+    }
+  },
+  "3": {
+    "class_type": "SaveVideo",
+    "inputs": {
+      "video": ["2", 0],
+      "filename_prefix": "video/kling-v3-omni",
+      "format": "mp4",
+      "codec": "h264"
+    }
+  }
+}
