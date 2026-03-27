@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { ChevronDown, ChevronUp, Upload, Sparkles } from "lucide-react";
+import { ChevronDown, ChevronUp, Upload, Sparkles, Info } from "lucide-react";
 
 const FORMAT_OPTIONS = [
   { value: "auto", label: "Auto (recommended)" },
@@ -20,12 +20,22 @@ const FORMAT_OPTIONS = [
   { value: "custom", label: "Custom" },
 ];
 
+const FORMAT_DESCRIPTIONS: Record<string, string> = {
+  auto: "The AI will analyze your concept and pick the best format automatically based on the content type, dialogue needs, and virality potential.",
+  "mini-drama": "A short narrative with multiple scenes, character dialogue, and dramatic beats (HOOK > SETUP > ESCALATION > PUNCHLINE). Best for storytelling, parodies, and character-driven humor. Typically 3-8 scenes, 15-60s.",
+  "text-meme": "A single visual with bold text overlay — no characters or dialogue needed. Quick to produce, high shareability. Think classic meme format adapted to video. 5-15s.",
+  reaction: "Split-screen or cut-between format: source content + character reaction + punchline. One reactor character with escalating expressions. Great for commentary and hot takes. 10-30s.",
+  skit: "A loosely structured comedic scene with improvised feel. Less rigid than mini-drama — can break the fourth wall, use jump cuts, and play with timing. 10-45s.",
+  custom: "Define your own format. The AI will follow your concept description as closely as possible without imposing a predefined structure.",
+};
+
 const STYLE_OPTIONS = [
   { value: "absurdist", label: "Absurdist" },
   { value: "wholesome", label: "Wholesome" },
   { value: "dark-humor", label: "Dark Humor" },
   { value: "relatable", label: "Relatable" },
   { value: "cinematic", label: "Cinematic" },
+  { value: "other", label: "Other..." },
 ];
 
 const IMAGE_MODELS = [
@@ -111,6 +121,7 @@ export default function CreatePage() {
   const [concept, setConcept] = useState("");
   const [format, setFormat] = useState("auto");
   const [style, setStyle] = useState("dark-humor");
+  const [customStyle, setCustomStyle] = useState("");
   const [duration, setDuration] = useState(15);
   const [imageModel, setImageModel] = useState("FluxKontextProImageNode");
   const [videoModel, setVideoModel] = useState("kling-v2-master");
@@ -139,7 +150,7 @@ export default function CreatePage() {
       const body: Record<string, unknown> = {
         concept: concept.trim(),
         format,
-        style,
+        style: style === "other" ? customStyle.trim() || "custom" : style,
         duration_target: duration,
         model_overrides: { image: imageModel, video: videoModel, tts: voice, lip_sync: lipSync },
       };
@@ -186,6 +197,24 @@ export default function CreatePage() {
                 <Select options={STYLE_OPTIONS} value={style} onChange={setStyle} />
               </div>
             </div>
+
+            {FORMAT_DESCRIPTIONS[format] && (
+              <div className="flex gap-3 p-3 bg-secondary/50 rounded-lg border border-border/50">
+                <Info className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-muted-foreground leading-relaxed">{FORMAT_DESCRIPTIONS[format]}</p>
+              </div>
+            )}
+
+            {style === "other" && (
+              <div>
+                <label className="block text-sm font-medium mb-2">Custom Style</label>
+                <Input
+                  value={customStyle}
+                  onChange={(e) => setCustomStyle(e.target.value)}
+                  placeholder="Describe your style... e.g., noir thriller, mockumentary, anime parody"
+                />
+              </div>
+            )}
 
             <Slider
               label="Duration"
